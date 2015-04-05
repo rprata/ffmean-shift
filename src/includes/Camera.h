@@ -5,6 +5,9 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "Filter.h"
+#include "Draw.h"
+
 extern "C" {
 
 #include <libavcodec/avcodec.h>
@@ -18,10 +21,13 @@ extern "C" {
 #include <SDL_thread.h>
 }
 
+#define FPS 30
+
 class Camera
 {
 
 private:
+	
 	AVFormatContext * pFormatCtx;
 	AVCodecContext * pCodecCtx;
 	AVCodecContext * c;
@@ -50,10 +56,6 @@ private:
 	SDL_Event event;
 
 	SDL_Overlay * SetupSDL(AVCodecContext * pCodecCtx, SDL_Overlay * bmp);
-	void Filter(AVFrame * pFrame, int width, int height, void (Camera::*f)(AVFrame *, int, int));
-	void GrayFilter(AVFrame * pFrame, int y, int k);
-	void SimpleGaussianFilter(AVFrame * pFrame, int y, int k);
-	void ComplexGaussianFilter(AVFrame * pFrame, int y, int k);
 
 public:
 	bool SetupCamera(std::string m_device);

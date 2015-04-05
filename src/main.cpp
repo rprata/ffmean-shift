@@ -1,4 +1,4 @@
-#include "includes/Camera.h"
+#include "Camera.h"
 
 Camera c;
 

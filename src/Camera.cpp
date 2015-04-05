@@ -1,4 +1,4 @@
-#include "includes/Camera.h"
+#include "Camera.h"
 
 bool Camera::SetupCamera(std::string m_device)
 {
@@ -168,12 +168,24 @@ bool Camera::SetupCamera(std::string m_device)
 
 bool Camera::StartCamera()
 {
+	Draw d;
+	Uint32 start;
+
+	bool mouseButtonSecond = false;
+	int counterClicks = 1;
+
+	int m_x = 0;
+	int m_y = 0;
+	int m_width = 0;
+	int m_height = 0;
+
 	while (true) 
 	{
 		av_read_frame(pFormatCtx, &m_packet);
 	  	//Testa se e unm pacote com de stream de video
 	  	if(m_packet.stream_index == m_videostream) 
 	  	{
+	  		start = SDL_GetTicks();
 			// Decode frame de video
 		    avcodec_decode_video2(pCodecCtx, pDecodedFrame, &m_frameFinished, &m_packet);
 
@@ -195,7 +207,37 @@ bool Camera::StartCamera()
 					pFrameRGB->linesize
 				);
 				
-				Filter(pFrameRGB, pCodecCtx->width, pCodecCtx->height, &Camera::SimpleGaussianFilter);
+				SDL_PollEvent(&event);
+		
+				switch(event.type) 
+				{
+					case SDL_QUIT: 
+						SDL_Quit();
+						return true;
+				  	case SDL_MOUSEBUTTONDOWN:
+				  		if (counterClicks % 2 == 0 && counterClicks > 0)
+				  		{
+				  			mouseButtonSecond = true;
+				  			m_width = event.button.x;
+				  			m_height = event.button.y;
+				  			counterClicks = 1;
+				  		}
+				  		else 
+				  		{	
+				  			mouseButtonSecond = false;
+				  			m_x = event.button.x;
+				  			m_y = event.button.y;
+				  			counterClicks++;
+				  		}
+				  		break;
+					default:
+				  		break;
+				}
+
+				if (mouseButtonSecond)
+				{
+					d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, 1);
+				}
 
 				//Convertendo de RGB para YUV
 				sws_scale (
@@ -222,24 +264,20 @@ bool Camera::StartCamera()
 				rect.y = 0;
 				rect.w = c->width;
 				rect.h = c->height;
-
+				
 				SDL_DisplayYUVOverlay(bmp, &rect);
+
+				if(1000 / FPS > SDL_GetTicks() - start) 
+				{
+                	SDL_Delay(1000 / FPS - (SDL_GetTicks() - start));
+                }
+
 		     }	
     	}
 		av_free_packet(&m_packet);
 
-		SDL_PollEvent(&event);
-	    
-	    switch(event.type) 
-	    {
-	    	case SDL_QUIT: SDL_Quit();
-	    		return 0;
-	      		break;
-	    	default:
-	      		break;
-	    }
     }
-  
+
 	return true;
 }
 
@@ -251,10 +289,10 @@ SDL_Overlay * Camera::SetupSDL(AVCodecContext * pCodecCtx, SDL_Overlay * bmp)
     	fprintf(stderr, "Nao foi possivel inicializar o SDL - %s\n", SDL_GetError());
     	return NULL;
   	}
+  	
+  	SDL_WM_SetCaption("FFMean-Shift", NULL);
 
-  	SDL_Surface * screen;
-
-	screen = SDL_SetVideoMode(pCodecCtx->width, pCodecCtx->height, 0, 0);
+	SDL_Surface * screen = SDL_SetVideoMode(pCodecCtx->width, pCodecCtx->height, 32, SDL_SWSURFACE);
 	if (!screen) 
 	{
   		fprintf(stderr, "SDL: Nao foi possivel configurar o modo do video\n");
@@ -264,101 +302,4 @@ SDL_Overlay * Camera::SetupSDL(AVCodecContext * pCodecCtx, SDL_Overlay * bmp)
 	bmp = SDL_CreateYUVOverlay(pCodecCtx->width, pCodecCtx->height, SDL_YV12_OVERLAY, screen);
 	
   	return bmp;
-}
-
-void Camera::Filter(AVFrame * pFrame, int width, int height, void (Camera::*f)(AVFrame *, int, int))
-{
-	int  y, k;
-	for(y = 1; y < height -1; y++)
-		for (k = 3; k < 3 * (width - 1); k += 3)
-		{
-			(this->*f)(pFrame, y, k);
-		}
-}
-
-void Camera::GrayFilter(AVFrame * pFrame, int y, int k)
-{
-	float r, g, b;
-	uint8_t out;
-	uint8_t * bufferRGB = pFrame->data[0] + y*pFrame->linesize[0] + k;
-
-	b = (float)(0.114f * (int) *(bufferRGB));
-	g = (float)(0.587f * (int) *(bufferRGB + 1));
-	r = (float)(0.299f * (int) *(bufferRGB + 2));
-	out = (uint8_t) (r + g + b);
-	*(bufferRGB) = out;
-	*(bufferRGB + 1) = out;
-	*(bufferRGB + 2) = out;
-}
-
-
-void Camera::SimpleGaussianFilter(AVFrame * pFrame, int y, int k)
-{
-	uint8_t * center = (pFrame->data[0] + y*pFrame->linesize[0] + k);
-	uint8_t * left = (pFrame->data[0] + y*pFrame->linesize[0] + k - 3);
-	uint8_t * right = (pFrame->data[0] + y*pFrame->linesize[0] + k + 3);
-	uint8_t * top =  (pFrame->data[0] + (y - 1)*pFrame->linesize[0] + k);
-	uint8_t * bottom = (pFrame->data[0] + (y + 1)*pFrame->linesize[0] + k);
-
-	float pixel;
-	uint8_t out;
-	
-	pixel = (float) ((float) ((int) *(center)) + (float) ((int) *(left)) + (float) ((int) *(right)) + (float) ((int) *(top)) + (float) ((int) *(bottom)))/5.0f;
-	out = (uint8_t) pixel;
-	*(center) = out;
-
-	pixel = (float) ((float) ((int) *(center + 1)) + (float) ((int) *(left + 1)) + (float) ((int) *(right + 1)) + (float) ((int) *(top + 1)) + (float) ((int) *(bottom + 1) + 1))/5.0f;
-	out = (uint8_t) pixel;
-	*(center + 1) = out;
-
-	pixel = (float) ((float) ((int) *(center + 2)) + (float) ((int) *(left + 2)) + (float) ((int) *(right + 2)) + (float) ((int) *(top + 2)) + (float) ((int) *(bottom + 1) + 2))/5.0f;
-	out = (uint8_t) pixel;
-	*(center + 2) = out;
-}
-
-void Camera::ComplexGaussianFilter(AVFrame * pFrame, int y, int k)
-{
-	uint8_t * center = (pFrame->data[0] + y*pFrame->linesize[0] + k);
-	uint8_t * left = (pFrame->data[0] + y*pFrame->linesize[0] + k - 3);
-	uint8_t * right = (pFrame->data[0] + y*pFrame->linesize[0] + k + 3);
-	uint8_t * top =  (pFrame->data[0] + (y - 1)*pFrame->linesize[0] + k);
-	uint8_t * bottom = (pFrame->data[0] + (y + 1)*pFrame->linesize[0] + k);
-
-	float pixel;
-	uint8_t out;
-	float k1, k2, k3, k4;
-
-	k1 = sqrt((float)((*center - *left)*(*center - *left)));
-	k2 = sqrt((float)((*center - *right)*(*center - *right)));
-	k3 = sqrt((float)((*center - *top)*(*center - *top)));
-	k4 = sqrt((float)((*center - *bottom)*(*center - *bottom)));
-
-
-	pixel = (float) ((float) ((int) *(center)) + (float) ((int) *(left)*k1) + 
-		(float) ((int) *(right)*k2) + (float) ((int) *(top)*k3) + 
-		(float) ((int) *(bottom)*k4))/(float)(1 + k1 + k2 + k3 +k4);
-	out = (uint8_t) pixel;
-	*(center) = out;
-
-	k1 = sqrt((float)((*(center + 1) - *(left + 1))*(*(center + 1) - *(left + 1))));
-	k2 = sqrt((float)((*(center + 1) - *(right + 1))*(*(center + 1) - *(right + 1))));
-	k3 = sqrt((float)((*(center + 1) - *(top + 1))*(*(center + 1) - *(top + 1))));
-	k4 = sqrt((float)((*(center + 1) - *(bottom + 1))*(*(center + 1) - *(bottom + 1))));
-
-	pixel = (float) ((float) ((int) *(center + 1)) + (float) ((int) *(left + 1)*k1) + 
-		(float) ((int) *(right + 1)*k2) + (float) ((int) *(top + 1)*k3) + 
-		(float) ((int) *(bottom + 1)*k4 + 1))/(float)(1 + k1 + k2 + k3 +k4);
-	out = (uint8_t) pixel;
-	*(center + 1) = out;
-
-	k1 = sqrt((float)((*(center + 2) - *(left + 2))*(*(center + 2) - *(left + 1))));
-	k2 = sqrt((float)((*(center + 2) - *(right + 2))*(*(center + 2) - *(right + 1))));
-	k3 = sqrt((float)((*(center + 2) - *(top + 2))*(*(center + 2) - *(top + 1))));
-	k4 = sqrt((float)((*(center + 2) - *(bottom + 2))*(*(center + 2) - *(bottom + 1))));
-
-	pixel = (float) ((float) ((int) *(center + 2)) + (float) ((int) *(left + 2)*k1) + 
-		(float) ((int) *(right + 2)*k2) + (float) ((int) *(top + 2)*k3) + 
-		(float) ((int) *(bottom + 2)*k4 + 1))/(float)(1 + k1 + k2 + k3 +k4);	
-	out = (uint8_t) pixel;
-	*(center + 2) = out;
 }

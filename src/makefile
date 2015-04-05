@@ -3,6 +3,8 @@ CXX :=g++
 all: CXXFLAGS :=-Wall -O2 -D__STDC_CONSTANT_MACROS
 debug: CXXFLAGS :=-g -Wall -O0 -D__STDC_CONSTANT_MACROS
 
+LDLIBS := -I. -I./includes
+
 LDLIBS +=-lavformat \
 		 -lavcodec \
 		 -lavdevice \
@@ -13,7 +15,7 @@ LDLIBS +=-lavformat \
 		 -lm \
 		 -lpthread
 
-SOURCE :=main.cpp Camera.cpp
+SOURCE :=main.cpp Camera.cpp Filter.cpp Draw.cpp
 BIN :=ffmean-shift
 
 LDLIBS += `sdl-config --cflags --libs`
