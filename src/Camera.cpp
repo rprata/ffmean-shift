@@ -241,7 +241,7 @@ bool Camera::StartCamera()
 				{
 					int thickness = 1;
 					d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, thickness);
-					meanshift.CalculateHistogram(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness, m_y + thickness, m_width - thickness, m_height - thickness);
+					meanshift.CalculateHistogram(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness + 1, m_y + thickness + 1, m_width - thickness - 1, m_height - thickness - 1);
 				}
 
 				//Convertendo de RGB para YUV

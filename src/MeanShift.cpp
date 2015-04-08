@@ -13,7 +13,8 @@ void MeanShift::SetupMeanShift()
 void MeanShift::CalculateHistogram(AVFrame * pFrame, int imageW, int imageH, int x, int y, int width, int height) 
 {	
 	uint8_t * bufferRGB = NULL;
-	
+	uint8_t r, g, b;
+
 	for (int i = 0; i < imageH; i++) 
 	{
 		for (int k = 0; k < 3 * imageW; k += 3)
@@ -21,9 +22,12 @@ void MeanShift::CalculateHistogram(AVFrame * pFrame, int imageW, int imageH, int
 			bufferRGB = pFrame->data[0] + i*pFrame->linesize[0] + k;
 			if ((k/3 >= x)  && (k/3 <= width) && (i >= y) && (i <= height))
 			{
-				histogram.R[*(bufferRGB)]++;
-				histogram.G[*(bufferRGB) + 1]++;
-				histogram.B[*(bufferRGB) + 2]++;
+				r = *(bufferRGB);
+				g = *(bufferRGB + 1);
+				b = *(bufferRGB + 2);
+				histogram.R[r]++;
+				histogram.G[g]++;
+				histogram.B[b]++;
 			}
 		}
 	}
