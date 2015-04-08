@@ -1,5 +1,5 @@
-#ifndef Draw_H
-#define Draw_H
+#ifndef DRAW_H
+#define DRAW_H
 
 extern "C" {
 #include <libavformat/avformat.h>

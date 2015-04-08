@@ -179,6 +179,9 @@ bool Camera::StartCamera()
 	int m_width = 0;
 	int m_height = 0;
 
+	MeanShift meanshift;
+	meanshift.SetupMeanShift();
+
 	while (true) 
 	{
 		av_read_frame(pFormatCtx, &m_packet);
@@ -236,7 +239,9 @@ bool Camera::StartCamera()
 
 				if (mouseButtonSecond)
 				{
-					d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, 1);
+					int thickness = 1;
+					d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, thickness);
+					meanshift.CalculateHistogram(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness, m_y + thickness, m_width - thickness, m_height - thickness);
 				}
 
 				//Convertendo de RGB para YUV

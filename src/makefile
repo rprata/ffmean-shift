@@ -15,7 +15,7 @@ LDLIBS +=-lavformat \
 		 -lm \
 		 -lpthread
 
-SOURCE :=main.cpp Camera.cpp Filter.cpp Draw.cpp
+SOURCE :=main.cpp Camera.cpp Filter.cpp Draw.cpp MeanShift.cpp
 BIN :=ffmean-shift
 
 LDLIBS += `sdl-config --cflags --libs`

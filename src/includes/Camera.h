@@ -7,6 +7,7 @@
 
 #include "Filter.h"
 #include "Draw.h"
+#include "MeanShift.h"
 
 extern "C" {
 
