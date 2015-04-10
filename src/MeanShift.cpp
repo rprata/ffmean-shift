@@ -30,12 +30,13 @@ void MeanShift::CalculateHistogram(AVFrame * pFrame, int imageW, int imageH, int
 				int cx = (x + width)/2;
 				int cy = (y + height)/2;
 
-				float W = exp(-0.5*((cx-i)*(cx-i) + (cy - k/3)*(cy - k/3))/(width*width/16));
+				//rever
+				float W = exp(-0.5 * ((cx-i)*(cx-i) + (cy - k / 3)*(cy - k / 3))/(width*width / 16));
 
 				histogram.R[r/16] += W;
 				histogram.G[g/16] += W;
 				histogram.B[b/16] += W;
-				total += 3*W;
+				total += 3 * W;
 
 			}
 		}
@@ -44,9 +45,9 @@ void MeanShift::CalculateHistogram(AVFrame * pFrame, int imageW, int imageH, int
 	printf("******************* Histogram **********************\n");
 	for (int i = 0; i < 16; i++) 
 	{
-		printf("R %i - %f \t", i, test += histogram.R[i]/total);
-		printf("G %i - %f \t", i, test += histogram.G[i]/total);
-		printf("B %i - %f \n", i, test += histogram.B[i]/total);
+		printf("R %i - %f \t", i, histogram.R[i]/total);
+		printf("G %i - %f \t", i, histogram.G[i]/total);
+		printf("B %i - %f \n", i, histogram.B[i]/total);
 	}
 
 	for (int i = 0; i < 16; i++) 
