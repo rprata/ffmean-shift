@@ -9,9 +9,9 @@ class MeanShift {
 
 typedef struct
 {
-	uint8_t R[256];
-	uint8_t G[256];
-	uint8_t B[256];
+	float R[16];
+	float G[16];
+	float B[16];
 } Histogram;
 
 private:
