@@ -10,10 +10,10 @@ void Draw::DrawRect (AVFrame * pFrame, int imageW, int imageH,int x, int y, int 
 		{
 			bufferRGB = pFrame->data[0] + i*pFrame->linesize[0] + k;
 		
-			if ((k/3 >= x - thickness)  && (k/3 <= width + thickness) && (i >= y - thickness) && (i <= height + thickness))
+			if ((k/3 >= x - thickness)  && (k/3 <= x + width + thickness) && (i >= y - thickness) && (i <= y + height + thickness))
 			{
-				if ((k/3 <= x + thickness) || (k/3 >= width - thickness) ||
-					(i <= y + thickness) || (i >= height - thickness))
+				if ((k/3 <= x + thickness) || (k/3 >= x + width - thickness) ||
+					(i <= y + thickness) || (i >= y + height - thickness))
 				{
 					*(bufferRGB) = (0xFF0000 & color) >> 16;
 					*(bufferRGB + 1) = (0x00FF00 & color) >> 8;

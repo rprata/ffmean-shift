@@ -155,8 +155,6 @@ bool Camera::SetupCamera(std::string m_device)
 	outbuf = NULL;
 	outbuf = (uint8_t *) av_malloc(outbuf_size);
 
-	avpicture_alloc(&pLastBufferRGB, PIX_FMT_RGB24, c->width, c->height);
-
 	if ((bmp = SetupSDL(pCodecCtx, bmp)) == NULL) 
 	{
 		return false;
@@ -171,8 +169,9 @@ bool Camera::StartCamera()
 	Draw d;
 	Uint32 start;
 
-	bool mouseButtonSecond = false;
+	bool secondEventClick = false;
 	int counterClicks = 1;
+	int framecounter = 0;
 
 	int m_x = 0;
 	int m_y = 0;
@@ -220,14 +219,15 @@ bool Camera::StartCamera()
 				  	case SDL_MOUSEBUTTONDOWN:
 				  		if (counterClicks % 2 == 0 && counterClicks > 0)
 				  		{
-				  			mouseButtonSecond = true;
-				  			m_width = event.button.x;
-				  			m_height = event.button.y;
+				  			secondEventClick = true;
+				  			m_width = event.button.x - m_x;
+				  			m_height = event.button.y - m_y;
 				  			counterClicks = 1;
 				  		}
 				  		else 
 				  		{	
-				  			mouseButtonSecond = false;
+				  			framecounter = 0;
+				  			secondEventClick = false;
 				  			m_x = event.button.x;
 				  			m_y = event.button.y;
 				  			counterClicks++;
@@ -237,11 +237,22 @@ bool Camera::StartCamera()
 				  		break;
 				}
 
-				if (mouseButtonSecond)
-				{
+				if (secondEventClick)
+				{					
 					int thickness = 1;
 					d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, thickness);
-					meanshift.CalculateHistogram(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness + 1, m_y + thickness + 1, m_width - thickness - 1, m_height - thickness - 1);
+					if (framecounter == 0)
+					{
+						//captura primeiro frame cria o vetor q^u
+						meanshift.SetupQVector(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness + 1, m_y + thickness + 1, m_width - thickness - 1, m_height - thickness - 1);
+					}
+					else if (framecounter == 1)
+					{
+						//captura o segundo frame e gera o vetor p^u. Com isso inicia o meanshift
+						meanshift.SetupPVector(pFrameRGB);
+						meanshift.StartMeanShift(pFrameRGB);
+					}
+					framecounter++;	
 				}
 
 				//Convertendo de RGB para YUV
