@@ -240,18 +240,22 @@ bool Camera::StartCamera()
 				if (secondEventClick)
 				{					
 					int thickness = 1;
-					d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, thickness);
 					if (framecounter == 0)
 					{
 						//captura primeiro frame cria o vetor q^u
+						d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, thickness);
 						meanshift.SetupQVector(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness + 1, m_y + thickness + 1, m_width - thickness - 1, m_height - thickness - 1);
 					}
-					else if (framecounter == 1)
+					else if (framecounter >= 1)
 					{
 						//captura o segundo frame e gera o vetor p^u. Com isso inicia o meanshift
 						meanshift.SetupPVector(pFrameRGB);
 						meanshift.StartMeanShift(pFrameRGB);
+						double * y = meanshift.getVectorY();
+						// printf("camera %f -- %f\n", y[0], y[1]);
+						d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, y[0] - m_width/2, y[1] - m_height/2, m_width, m_height, 0xF00D42, thickness);
 					}
+
 					framecounter++;	
 				}
 

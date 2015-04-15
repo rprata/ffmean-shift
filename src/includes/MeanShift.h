@@ -20,8 +20,8 @@ typedef struct
 
 private:
 	Histogram q_u, p_u;
-	double weight;
-	double p_y0_q, p_y1_q;
+	double p_y0_q;
+	double y0[2], y1[2];
 
 	int m_imageW;
 	int m_imageH;
@@ -36,6 +36,7 @@ public:
 	void SetupPVector(AVFrame * pFrame);
 	void SetupMeanShift();
 	void StartMeanShift(AVFrame * pFrame);
+	double * getVectorY();
 
 };
 

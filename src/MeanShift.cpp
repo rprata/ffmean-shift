@@ -42,7 +42,7 @@ MeanShift::Histogram MeanShift::CalculateHistogram(AVFrame * pFrame, int imageW,
 				g = *(bufferRGB + 1);
 				b = *(bufferRGB + 2);
 				
-				normalDistribution = exp(-0.5 * ((cx - i) * (cx - i) + (cy - k / 3) * (cy - k / 3))/(width * width / 16));
+				normalDistribution = exp(-0.5 * ((cy - i) * (cy - i) + (cx - k / 3) * (cx - k / 3))/(width * width / 16));
 
 				histogram.R[r/NBINS] += normalDistribution;
 				histogram.G[g/NBINS] += normalDistribution;
@@ -71,6 +71,8 @@ void MeanShift::SetupQVector(AVFrame * pFrame, int imageW, int imageH, int x, in
 	m_y = y;
 	m_width = width;
 	m_height = height;
+	y0[0] = x + width / 2;	
+	y0[1] = y + height / 2;
 }
 
 void MeanShift::SetupPVector(AVFrame * pFrame)
@@ -89,32 +91,48 @@ void MeanShift::StartMeanShift(AVFrame * pFrame)
 		p_y0_q += sqrt(q_u.B[i]*p_u.B[i]);
 	}
 	
-	//TODO: rever essa eq.	
-	// Histogram histogram;
-	// for (int i = m_x - m_width/4; i < m_width; i++)
-	// {
-	// 	if (i < 0) continue;
-	// 	for (int j = m_y - m_height/4; j < m_height; j++)
-	// 	{
-	// 		if (j < 0) continue;
-	// 		// histogram = CalculateHistogram(pFrame, m_imageW, m_imageH, i, j, m_width, m_height);
-	// 		for (int k = 0; k < NBINS; k++)
-	// 		{
+	//Calculo dos pesos
+	double weight;
+	uint8_t * bufferRGB = NULL;
+	uint8_t r, g, b;
 
-	// 		}
-			
-	// 	}
-	// }
-	weight = 0;
-	for (int k = 0; k < NBINS; k++)
+	y1[0] = y1[1] = 0;
+	double delta = 0;
+
+	for (int i = m_y; i <= m_y + m_height; i++)
 	{
-		weight += sqrt(q_u.R[k]/p_u.R[k]);
-		weight += sqrt(q_u.G[k]/p_u.G[k]);
-		weight += sqrt(q_u.B[k]/p_u.B[k]);
+		for (int j = 3*(m_x); j <= 3*(m_x + m_width); j+=3)
+		{
+			bufferRGB = pFrame->data[0] + i*pFrame->linesize[0] + j;
+			r = *(bufferRGB);
+			g = *(bufferRGB + 1);
+			b = *(bufferRGB + 2);
+			weight = 0;
+			weight += sqrt(q_u.R[r/NBINS]/p_u.R[r/NBINS]);
+			weight += sqrt(q_u.G[g/NBINS]/p_u.G[g/NBINS]);
+			weight += sqrt(q_u.B[b/NBINS]/p_u.B[b/NBINS]);
+			//numerador da eq 3
+			y1[1] += i*weight*exp(-0.5 * ((y0[1] - i) * (y0[1] - i) + (y0[0] - j / 3) * (y0[0] - j / 3))/(m_width * m_width / 16));
+			y1[0] += (j/3)*weight*exp(-0.5 * ((y0[1] - i) * (y0[1] - i) + (y0[0] - j / 3) * (y0[0] - j / 3))/(m_width * m_width / 16));
+
+			//denominador da eq 3
+			delta += weight*exp(-0.5 * ((y0[1] - i) * (y0[1] - i) + (y0[0] - j / 3) * (y0[0] - j / 3))/(m_width * m_width / 16));
+
+		}
 	}
-	
-	int cx = x + width / 2;	
-	int cy = y + height / 2;
-	
-	// p_y1_q = exp(-0.5 * ((cx - i) * (cx - i) + (cy - k / 3) * (cy - k / 3))/(width * width / 16));
+
+	y1[0] /= delta;
+	y1[1] /= delta;
+
+	// printf("MeanShift %f -- %f --- %f\n", y1[0], y1[1], delta);
+
+	y0[0] = y1[0];
+	y0[1] = y1[1];
+	m_x = y0[0] - m_width/2;
+	m_y = y0[1] - m_height/2;	
+}
+
+double * MeanShift::getVectorY()
+{
+	return y0;
 }
