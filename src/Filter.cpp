@@ -1,16 +1,31 @@
 #include "Filter.h"
 
-void Filter::StartFilter(AVFrame * pFrame, int width, int height, void (Filter::*f)(AVFrame *, int, int))
+void Filter::StartFilter(AVFrame * pFrame, int width, int height, void (Filter::*f)(AVFrame *, int, int, int, int))
 {
 	int  y, k;
 	for(y = 1; y < height -1; y++)
 		for (k = 3; k < 3 * (width - 1); k += 3)
 		{
-			(this->*f)(pFrame, y, k);
+			(this->*f)(pFrame, width, height, y, k);
 		}
 }
 
-void Filter::GrayFilter(AVFrame * pFrame, int y, int k)
+void Filter::HFlip(AVFrame * pFrame, int width, int height, int y, int k)
+{	
+	uint8_t stack[3*width];
+
+	uint8_t * bufferRGB = pFrame->data[0] + y*pFrame->linesize[0] + k;
+	stack[k] = *(bufferRGB);
+	stack[k + 1] = *(bufferRGB + 1);
+	stack[k + 2] = *(bufferRGB + 2);
+		
+	*(pFrame->data[0] + y*pFrame->linesize[0] + k) = stack[3*width - k];
+	*(pFrame->data[0] + y*pFrame->linesize[0] + k + 1) = stack[3*width - k + 1];
+	*(pFrame->data[0] + y*pFrame->linesize[0] + k + 2) = stack[3*width - k + 2];
+
+}
+
+void Filter::GrayFilter(AVFrame * pFrame, int width, int height, int y, int k)
 {
 	float r, g, b;
 	uint8_t out;
@@ -26,7 +41,7 @@ void Filter::GrayFilter(AVFrame * pFrame, int y, int k)
 }
 
 
-void Filter::SimpleGaussianFilter(AVFrame * pFrame, int y, int k)
+void Filter::SimpleGaussianFilter(AVFrame * pFrame, int width, int height, int y, int k)
 {
 	uint8_t * center = (pFrame->data[0] + y*pFrame->linesize[0] + k);
 	uint8_t * left = (pFrame->data[0] + y*pFrame->linesize[0] + k - 3);
@@ -50,7 +65,7 @@ void Filter::SimpleGaussianFilter(AVFrame * pFrame, int y, int k)
 	*(center + 2) = out;
 }
 
-void Filter::ComplexGaussianFilter(AVFrame * pFrame, int y, int k)
+void Filter::ComplexGaussianFilter(AVFrame * pFrame, int width, int height, int y, int k)
 {
 	uint8_t * center = (pFrame->data[0] + y*pFrame->linesize[0] + k);
 	uint8_t * left = (pFrame->data[0] + y*pFrame->linesize[0] + k - 3);

@@ -8,11 +8,12 @@ extern "C" {
 class Filter {
 
 public:
-	void GrayFilter(AVFrame * pFrame, int y, int k);
-	void SimpleGaussianFilter(AVFrame * pFrame, int y, int k);
-	void ComplexGaussianFilter(AVFrame * pFrame, int y, int k);
+	void GrayFilter(AVFrame * pFrame, int width, int height, int y, int k);
+	void SimpleGaussianFilter(AVFrame * pFrame, int width, int height, int y, int k);
+	void ComplexGaussianFilter(AVFrame * pFrame, int width, int height, int y, int k);
+	void HFlip(AVFrame * pFrame, int width, int height, int y, int k);
 
-	void StartFilter(AVFrame * pFrame, int width, int height, void (Filter::*f)(AVFrame *, int, int));
+	void StartFilter(AVFrame * pFrame, int width, int height, void (Filter::*f)(AVFrame *, int, int, int, int));
 	
 };
 

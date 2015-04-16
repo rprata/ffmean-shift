@@ -151,7 +151,7 @@ bool Camera::SetupCamera(std::string m_device)
 	);
 
 	avpicture_fill((AVPicture *) pOutputFrame, bufferYUV , PIX_FMT_YUV420P, c->width, c->height);
-	outbuf_size = 300000;
+	outbuf_size = pCodecCtx->bit_rate;
 	outbuf = NULL;
 	outbuf = (uint8_t *) av_malloc(outbuf_size);
 
@@ -181,6 +181,8 @@ bool Camera::StartCamera()
 	MeanShift meanshift;
 	meanshift.SetupMeanShift();
 
+	Filter f;
+
 	while (true) 
 	{
 		av_read_frame(pFormatCtx, &m_packet);
@@ -208,7 +210,9 @@ bool Camera::StartCamera()
 					pFrameRGB->data,
 					pFrameRGB->linesize
 				);
-				
+
+				f.StartFilter(pFrameRGB, c->width, c->height, &Filter::HFlip);
+
 				SDL_PollEvent(&event);
 		
 				switch(event.type) 
@@ -240,22 +244,20 @@ bool Camera::StartCamera()
 				if (secondEventClick)
 				{					
 					int thickness = 1;
-					if (framecounter == 0)
+					if (!framecounter)
 					{
-						//captura primeiro frame cria o vetor q^u
+						//captura primeiro frame cria o vetor q^u (target)
 						d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x, m_y, m_width, m_height, 0xF00D42, thickness);
 						meanshift.SetupQVector(pFrameRGB, pCodecCtx->width, pCodecCtx->height, m_x + thickness + 1, m_y + thickness + 1, m_width - thickness - 1, m_height - thickness - 1);
 					}
-					else if (framecounter >= 1)
+					else
 					{
-						//captura o segundo frame e gera o vetor p^u. Com isso inicia o meanshift
+						//captura o segundo frame e gera o vetor p^u. Com isso inicia o algoritmo de meanshift
 						meanshift.SetupPVector(pFrameRGB);
 						meanshift.StartMeanShift(pFrameRGB);
 						double * y = meanshift.getVectorY();
-						// printf("camera %f -- %f\n", y[0], y[1]);
 						d.DrawRect (pFrameRGB, pCodecCtx->width, pCodecCtx->height, y[0] - m_width/2, y[1] - m_height/2, m_width, m_height, 0xF00D42, thickness);
 					}
-
 					framecounter++;	
 				}
 

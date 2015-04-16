@@ -107,10 +107,12 @@ void MeanShift::StartMeanShift(AVFrame * pFrame)
 			r = *(bufferRGB);
 			g = *(bufferRGB + 1);
 			b = *(bufferRGB + 2);
+			
 			weight = 0;
 			weight += sqrt(q_u.R[r/NBINS]/p_u.R[r/NBINS]);
 			weight += sqrt(q_u.G[g/NBINS]/p_u.G[g/NBINS]);
 			weight += sqrt(q_u.B[b/NBINS]/p_u.B[b/NBINS]);
+
 			//numerador da eq 3
 			y1[1] += i*weight*exp(-0.5 * ((y0[1] - i) * (y0[1] - i) + (y0[0] - j / 3) * (y0[0] - j / 3))/(m_width * m_width / 16));
 			y1[0] += (j/3)*weight*exp(-0.5 * ((y0[1] - i) * (y0[1] - i) + (y0[0] - j / 3) * (y0[0] - j / 3))/(m_width * m_width / 16));
@@ -124,12 +126,34 @@ void MeanShift::StartMeanShift(AVFrame * pFrame)
 	y1[0] /= delta;
 	y1[1] /= delta;
 
-	// printf("MeanShift %f -- %f --- %f\n", y1[0], y1[1], delta);
+	//eq 4 e 5 nao sao tao necessarias
+	while(p_y1_q < p_y0_q)
+	{	
+		y1[0] = 0.5f*(y0[0] + y1[0]);
+		y1[1] = 0.5f*(y0[1] + y1[1]);
+		
+		// printf("%f %f\n", p_y1_q, p_y0_q);
+		usleep(2);
+		if (p_y1_q == p_y0_q)	break;
+		
+		m_x = y1[0] - m_width/2;
+		m_y = y1[1] - m_height/2;
+		
+		SetupPVector(pFrame);
+		p_y1_q = 0;
+
+		for (int i = 0; i < NBINS; i++) 
+		{
+			p_y1_q += sqrt(q_u.R[i]*p_u.R[i]);
+			p_y1_q += sqrt(q_u.G[i]*p_u.G[i]);
+			p_y1_q += sqrt(q_u.B[i]*p_u.B[i]);
+		}
+	}
 
 	y0[0] = y1[0];
 	y0[1] = y1[1];
 	m_x = y0[0] - m_width/2;
-	m_y = y0[1] - m_height/2;	
+	m_y = y0[1] - m_height/2;
 }
 
 double * MeanShift::getVectorY()

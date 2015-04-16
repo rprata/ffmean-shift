@@ -2,6 +2,7 @@
 #define MEANSHIFT_H
 
 #include <cmath>
+#include <unistd.h>
 
 extern "C" {
 #include <libavformat/avformat.h>
@@ -13,20 +14,23 @@ class MeanShift {
 
 typedef struct
 {
-	float R[NBINS];
-	float G[NBINS];
-	float B[NBINS];
+	double R[NBINS];
+	double G[NBINS];
+	double B[NBINS];
 } Histogram;
 
 private:
 	Histogram q_u, p_u;
+
 	double p_y0_q;
-	double y0[2], y1[2];
+	double p_y1_q;
+	double y0[2];
+	double y1[2];
 
 	int m_imageW;
 	int m_imageH;
 	int m_x;
-	int m_y; 
+	int m_y;
 	int m_width;
 	int m_height;
 

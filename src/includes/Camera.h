@@ -36,7 +36,7 @@ private:
 	AVCodec * codec;
 	AVFrame * pFrameRGB, * pDecodedFrame, * pOutputFrame;
 	AVPacket m_packet;
-		
+
 	struct SwsContext * sws_ctx;
 	struct SwsContext * out_sws_ctx;
 
