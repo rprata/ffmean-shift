@@ -81,4 +81,4 @@ You can view the results in this video
 License
 -------------
 
-This software is licensed under [gpl2](https://www.gnu.org/licenses/gpl-2.0.html).
+This software is licensed under [GPLv2](https://www.gnu.org/licenses/gpl-2.0.html).
