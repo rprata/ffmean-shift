@@ -74,7 +74,7 @@ Results
 -------------
 You can view the results in this video
 
-[![ffmean shift results](http://img.youtube.com/vi/6zny-7wZXB8&feature/0.jpg)](http://www.youtube.com/watch?v=6zny-7wZXB8&feature)
+[![ffmean shift results](http://img.youtube.com/vi/6zny-7wZXB8/0.jpg)](http://www.youtube.com/watch?v=6zny-7wZXB8)
 
 -------------
 
