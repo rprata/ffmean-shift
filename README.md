@@ -46,6 +46,7 @@ Algorithm Implementation
 -------------
 
 The implementation is based on the algorithm described in this [paper](http://comaniciu.net/Papers/MsTracking.pdf) (page 4).
+
 -------------
 
 Requirements
@@ -73,7 +74,7 @@ Results
 -------------
 You can view the results in this video
 
-[![ffmean shift results](http://img.youtube.com/vi/6wH6gkhirhw/0.jpg)](http://www.youtube.com/watch?v=6wH6gkhirhw)
+[![ffmean shift results](http://img.youtube.com/vi/6zny-7wZXB8&feature/0.jpg)](http://www.youtube.com/watch?v=6zny-7wZXB8&feature)
 
 -------------
 
