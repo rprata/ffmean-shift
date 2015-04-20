@@ -16,10 +16,10 @@ Mean shift is a non-parametric feature-space analysis technique for locating the
   - Smoothing;
 
 #### Overview
-Mean shift is a procedure for locating the max point of a density function given discrete data sampled from that function. It is useful for detecting the modes of this density. This is an iterative method, and we start with an initial estimate  ![equation](http://www.sciweavers.org/tex2img.php?eq=x&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0). Let a kernel function   $K(x_i - x)$  be given. This function determines the weight of nearby points for re-estimation of the mean. Typically a <b>Gaussian kernel</b> on the distance to the current estimate is used, $ K(x_i - x) = e^{-c||x_i - x||^2}$ . The weighted mean of the density in the window determined by  K:
+Mean shift is a procedure for locating the max point of a density function given discrete data sampled from that function. It is useful for detecting the modes of this density. This is an iterative method, and we start with an initial estimate  ![equation](http://www.sciweavers.org/tex2img.php?eq=x&bc=White&fc=Black&im=jpg&fs=12&ff=modern&edit=0). Let a kernel function [!equation](http://www.sciweavers.org/tex2img.php?eq=K%28x_i%20-%20x%29&bc=White&fc=Black&im=jpg&fs=12&ff=modern&edit=0) be given. This function determines the weight of nearby points for re-estimation of the mean. Typically a <b>Gaussian kernel</b> on the distance to the current estimate is used, [!equation](http://www.sciweavers.org/tex2img.php?eq=K%28x_i%20-%20x%29%20%3D%20e%5E%7B-c%7C%7Cx_i%20-%20x%7C%7C%5E2%7D&bc=White&fc=Black&im=jpg&fs=12&ff=modern&edit=0) . The weighted mean of the density in the window determined by K:
 
-$$m(x) = \frac{ \sum_{x_i \in N(x)} K(x_i - x) x_i } {\sum_{x_i \in N(x)} K(x_i - x)}$$
- 
+> [!equation](http://www.sciweavers.org/tex2img.php?eq=m%28x%29%20%3D%20%5Cfrac%7B%20%5Csum_%7Bx_i%20%5Cin%20N%28x%29%7D%20K%28x_i%20-%20x%29%20x_i%20%7D%20%7B%5Csum_%7Bx_i%20%5Cin%20N%28x%29%7D%20K%28x_i%20-%20x%29%7D&bc=White&fc=Black&im=jpg&fs=12&ff=modern&edit=0)
+
 where $N(x)$  is the neighborhood of  $x$ , a set of points for which  $K(x) \neq 0$.
 The mean-shift algorithm now sets  $x \leftarrow m(x)$ , and repeats the estimation until  m(x)  converges.
 
