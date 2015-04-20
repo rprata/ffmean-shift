@@ -14,12 +14,7 @@ Mean shift is a non-parametric feature-space analysis technique for locating the
   - Smoothing;
 
 #### Overview
-Mean shift is a procedure for locating the max point of a density function given discrete data sampled from that function. It is useful for detecting the modes of this density. This is an iterative method, and we start with an initial estimate  ![equation](https://github.com/rprata/ffmean-shift/blob/master/imgs/x.png=100x20). Let a kernel function   $K(x_i - x)$  be given. This function determines the weight of nearby points for re-estimation of the mean. Typically a <b>Gaussian kernel</b> on the distance to the current estimate is used, $ K(x_i - x) = e^{-c||x_i - x||^2}$ . The weighted mean of the density in the window determined by  K:
-
-$$m(x) = \frac{ \sum_{x_i \in N(x)} K(x_i - x) x_i } {\sum_{x_i \in N(x)} K(x_i - x)}$$
- 
-where $N(x)$  is the neighborhood of  $x$ , a set of points for which  $K(x) \neq 0$.
-The mean-shift algorithm now sets  $x \leftarrow m(x)$ , and repeats the estimation until  m(x)  converges.
+Mean shift is a procedure for locating the max point of a density function given discrete data sampled from that function. It is useful for detecting the modes of this density. This is an iterative method, and we start with an initial estimate. For more information, see the article on [Wikipedia](http://en.wikipedia.org/wiki/Mean_shift).
 
 #### Strengths
 1. Mean shift is an application-independent tool suitable for real data analysis.
@@ -63,10 +58,13 @@ Requirements
 
 Using FFMean Shift
 -------------
-In shell console:
+In shell console, enter in directory:
 > $ cd  ffmean-shift/src
 
+To compile the application:
 > $ make
+
+To run application:
 > $ ./ffmean-shift /dev/video0
 
 -------------
