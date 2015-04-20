@@ -16,7 +16,7 @@ Mean shift is a non-parametric feature-space analysis technique for locating the
   - Smoothing;
 
 #### Overview
-Mean shift is a procedure for locating the max point of a density function given discrete data sampled from that function. It is useful for detecting the modes of this density. This is an iterative method, and we start with an initial estimate  $x$ . Let a kernel function   $K(x_i - x)$  be given. This function determines the weight of nearby points for re-estimation of the mean. Typically a <b>Gaussian kernel</b> on the distance to the current estimate is used, $ K(x_i - x) = e^{-c||x_i - x||^2}$ . The weighted mean of the density in the window determined by  K:
+Mean shift is a procedure for locating the max point of a density function given discrete data sampled from that function. It is useful for detecting the modes of this density. This is an iterative method, and we start with an initial estimate  ![equation](http://www.sciweavers.org/tex2img.php?eq=x&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0). Let a kernel function   $K(x_i - x)$  be given. This function determines the weight of nearby points for re-estimation of the mean. Typically a <b>Gaussian kernel</b> on the distance to the current estimate is used, $ K(x_i - x) = e^{-c||x_i - x||^2}$ . The weighted mean of the density in the window determined by  K:
 
 $$m(x) = \frac{ \sum_{x_i \in N(x)} K(x_i - x) x_i } {\sum_{x_i \in N(x)} K(x_i - x)}$$
  
