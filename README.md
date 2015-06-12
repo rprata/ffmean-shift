@@ -72,9 +72,11 @@ To run application:
 
 Results
 -------------
-You can view the results in this video
+You can view the results in these videos
 
 [![ffmean shift results](http://img.youtube.com/vi/6zny-7wZXB8/0.jpg)](http://www.youtube.com/watch?v=6zny-7wZXB8)
+
+[![ffmean shift results](http://img.youtube.com/vi/MVzGjAZE-04/0.jpg)](http://www.youtube.com/watch?v=MVzGjAZE-04)
 
 -------------
 
