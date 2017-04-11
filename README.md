@@ -1,7 +1,7 @@
 FFMean Shift
 ===================
 
-Real Time Tracking based in Mean Shift framework using LIBAV and SDL libraries (Without using [OpenCV Library](http://opencv.org/)).
+Real Time Tracking is a native implementation based in Mean Shift framework using LIBAV and SDL libraries (don't use [OpenCV Library](http://opencv.org/)).
 
 ----------
 
@@ -45,7 +45,7 @@ SDL
 Algorithm Implementation
 -------------
 
-The implementation is based on the algorithm described in this [paper](http://comaniciu.net/Papers/MsTracking.pdf) (page 4).
+The implementation is based on the algorithm described on this [paper](http://comaniciu.net/Papers/MsTracking.pdf) (page 4).
 
 -------------
 
@@ -53,7 +53,7 @@ Requirements
 -------------
 - [LIBAV (less than or equal 0.8.16)](https://libav.org/releases/libav-0.8.17.tar.xz);
 - [SDL (less than or equal 1.2)](https://www.libsdl.org/download-1.2.php);
-- 1 webcam (in my case, I used the [playstation eye](http://www.amazon.com/PlayStation-Eye-3/dp/B000VTQ3LU));
+- 1 webcam (In this case, I have used the [playstation eye](http://www.amazon.com/PlayStation-Eye-3/dp/B000VTQ3LU));
 
 -------------
 
@@ -83,4 +83,4 @@ You can view the results in these videos
 License
 -------------
 
-This software is licensed under [GPLv2](https://www.gnu.org/licenses/gpl-2.0.html).
+This software is licensed under [MIT](https://opensource.org/licenses/MIT).
